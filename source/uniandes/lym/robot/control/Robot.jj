@@ -56,7 +56,7 @@ SKIP:
 	| "\n"
 }
 
-TOKEN: /* Nombres de Comandos */
+TOKEN [IGNORE_CASE]:  /* Commands */
 {
 
 			<MOV:  "Mov">
@@ -69,7 +69,47 @@ TOKEN: /* Nombres de Comandos */
 
 }
 
-TOKEN:
+TOKEN [IGNORE_CASE] : /* Simple commands */
+{
+			<JUMP:  "jump">
+		| 	<WALK: "walk">
+		| 	<LEAP: "leap">
+		| 	<TURN: "turn">
+		|  <TURNTO: "turnto" >
+		|  <DROP: "drop" >
+        |  < GET:  "get" >
+		| 	<GRAB: "grab">
+		| 	<LETGO: "letgo">
+		|  < NOP: "nop" >
+
+}
+
+TOKEN [IGNORE_CASE]: /* Control structure */
+{
+  			<IF:  "if">
+		| 	<ELSE: "else">
+		| 	<WHILE: "while">
+		| 	<REPEAT: "repeat">
+		|  < TIMES: "times" >
+		| 	<FACING: "facing">
+		| 	<CAN: "can">
+		|  < NOT: "not" >
+}
+  
+
+TOKEN [IGNORE_CASE] : /* Directions and orientations */
+{
+  			<FRONT:  "front">
+		| 	<LEFT: "left">
+		| 	<BACK: "back">
+		|  < NORTH: "north" >
+		| 	<SOUTH: "south">
+		| 	<WEST: "west">
+		| 	<AROUND: "around">
+}
+  
+
+TOKEN [IGNORE_CASE] :
 {
 		<BALLOONS:  "BALLOONS" >
 		|	<CHIPS:     "CHIPS"  >	
@@ -81,8 +121,10 @@ TOKEN:
 TOKEN :
 {
 		<NUM: (<DIGIT>)+ >
-		|  	<#DIGIT: ["0"-"9"] >
-        
+		| <#DIGIT: ["0"-"9"] >
+        | < NAME : (< LOWER>|< UPPER>)+ >
+		| < #LOWER : ["a"-"z"]>
+		| < #UPPER : ["A"-"Z"] >
 }
 
 
@@ -103,7 +145,7 @@ TOKEN :
 		| 	<HOP>  "(" x=num() ")" {world.moveForward(x,true);salida = "Command:Jumpforward ";}
 		| 	<GO>  "(" x=num() "," y=num()")" {world.setPostion(x,y);salida = "Command:GO ";}  
 		|  <PUT> "("  put() ")"					  			
-		|  <PICK> "(" get()  ")"	
+		|  <PICK> "(" pick()  ")"	
 	    |  < POP > "(" x=num() ")" {world.popBalloons(x); salida = "Comando:  Pop";}
 		) ";" 
 
@@ -140,9 +182,50 @@ TOKEN :
 		|  	  ( <BALLOONS>   "," f=num() {world.grabBalloons(f);salida="Command:  Pick balloons";})	 
 
 	}
+	void jump():
+	{}
+	{
+	  < JUMP> "(" <NUM> ","< NUM>")" }
 
+	void jump():
+	{}
+	{
+	  <WALK> "(" < NUM>")" }
 	
+	void turnto():
+	{
+	}
+	{
+	  	 "(" <TURNTO> "," < LEFT > | < RIGHT > | < AROUND > ")" 
+	}
 	
+	void drop():
+	{
+	  int v=1;  
+	}
+	{
+	  "(" <DROP> "," v=num() ")"
+	  
+	}
+
+
+	void grab():
+	{
+	  int v = 1;
+	}
+	{
+	  "(" < GRAB > "," v=num() ")"	    
+	}
+
+	void letGo():
+	{
+	  int v = 1;
+	}
+	{
+	   "(" < LETGO > "," v=num() ")"	    
+	}
+
+	void 
 
 	/**
 	 * Unsigned decimal number
